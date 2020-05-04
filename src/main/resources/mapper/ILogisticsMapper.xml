@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lts.dao.ILogisticsDao">
+	<resultMap id="logisticsResultMap" type="com.lts.entity.Logistics">
+		<id column="logistics_id" jdbcType="INTEGER" property="logisticsid" />
+		<result column="order_id" jdbcType="INTEGER" property="orderid" />
+		<result column="warehouse_receiver_lng" jdbcType="VARCHAR" property="warehouse_receiver_lng" />
+		<result column="warehouse_receiver_lat" jdbcType="VARCHAR" property="warehouse_receiver_lat" />
+		<result column="detail_address" jdbcType="VARCHAR" property="detail_address" />
+		<result column="status" jdbcType="INTEGER" property="status" />
+		<result column="goods_id" jdbcType="INTEGER" property="goodsid" />
+		<result column="warehouse_deliver_lng" jdbcType="VARCHAR" property="warehouse_deliver_lng" />
+		<result column="warehouse_deliver_lat" jdbcType="VARCHAR" property="warehouse_deliver_lat" />
+	</resultMap>
+
+	<insert id="addLogistics" parameterType="com.lts.entity.Logistics" >
+		insert into tb_logistics values(0,#{orderid},#{warehouse_receiver_lng},#{warehouse_receiver_lat},#{detail_address},#{status},#{goodsid},#{warehouse_deliver_lng},#{warehouse_deliver_lat})
+	</insert>
+	
+	<select id="findByOrderId" resultMap="logisticsResultMap">
+		select * from tb_logistics where order_id = #{orderid}
+	</select>
+	
+	<update id="updateLogistics" parameterType="com.lts.entity.Logistics">
+		update tb_logistics set warehouse_receiver_lng=#{warehouse_receiver_lng},warehouse_receiver_lat=#{warehouse_receiver_lat},
+								detail_address=#{detail_address},status=#{status},goods_id=#{goodsid},
+								warehouse_deliver_lng=#{warehouse_deliver_lng},warehouse_deliver_lat=#{warehouse_deliver_lat}
+							where order_id = #{orderid}
+	</update>
+	
+</mapper>

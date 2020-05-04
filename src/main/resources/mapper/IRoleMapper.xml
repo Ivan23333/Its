@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lts.dao.IRoleDao">
+	<resultMap id="roleResultMap" type="com.lts.entity.Roles">
+		<id column="role_id" jdbcType="INTEGER" property="roleid" />
+		<result column="role_name" jdbcType="VARCHAR" property="rolename" />
+		<result column="role_note" jdbcType="VARCHAR" property="note" />
+		<result column="role_status" jdbcType="INTEGER" property="status" />
+		<result column="role_create_time" jdbcType="TIMESTAMP" property="createtime" />
+		<result column="role_update_time" jdbcType="TIMESTAMP" property="updatetime" />
+	</resultMap>
+		
+		
+	<select id="findByRolePage" parameterType="int" resultMap="roleResultMap">
+		select * from tb_roles limit #{start},#{pageSize}
+	</select>	
+	
+	<select id="totalRoles" resultType="int">
+		select count(*) from tb_roles
+	</select>
+	
+	<select id="findRoleByUserId" resultMap="roleResultMap" parameterType="int">
+		select 
+			   DISTINCT 
+		       r.role_id,
+			   r.role_name,
+			   r.role_note,
+			   r.role_status,
+			   r.role_create_time,
+			   r.role_update_time 
+		from 
+			   tb_users u,tb_user_role ur,tb_roles r 
+	    where 
+	    	   u.user_id = ur.user_id and 
+	    	   ur.role_id = r.role_id and 
+	    	   u.user_id = #{userid}
+	</select>
+	
+	<select id="findRoleList" resultMap="roleResultMap">
+		select * from tb_roles
+	</select>
+	
+	<insert id="addRole" parameterType="com.lts.entity.Roles">
+		insert into tb_roles values(0,#{rolename},#{note},#{status},#{createtime},#{updatetime})
+	</insert>
+	
+	<delete id="deleteRole" parameterType="int">
+		delete from tb_roles where role_id = #{roleid}
+	</delete>
+
+	<select id="findById" resultMap="roleResultMap">
+		select * from tb_roles where role_id = #{roleid}
+	</select>
+	
+	<update id="updateRole" parameterType="com.lts.entity.Roles">
+		update tb_roles set role_name = #{rolename},role_note=#{note},
+							role_status=#{status},role_update_time=#{updatetime}
+						where role_id = #{roleid}
+	</update>
+	
+	<delete id="deleteByRoleId" parameterType="int">
+		delete from tb_role_function where role_id = #{roleid}
+	</delete>
+	
+	<insert id="saveRoleFunction" parameterType="int">
+		insert into tb_role_function values(#{roleid},#{functionid}) 
+	</insert>
+</mapper>

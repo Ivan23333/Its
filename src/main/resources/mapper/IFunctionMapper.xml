@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lts.dao.IFunctionDao">
+	<resultMap id="functionResultMap" type="com.lts.entity.Functions">
+		<id column="function_id" jdbcType="INTEGER" property="functionid" />
+		<result column="function_name" jdbcType="VARCHAR" property="functionname" />
+		<result column="function_url" jdbcType="VARCHAR" property="functionurl" />
+		<result column="function_code" jdbcType="VARCHAR" property="functioncode" />
+		<result column="function_parent_id" jdbcType="INTEGER" property="parentid" />
+		<result column="function_status" jdbcType="INTEGER" property="status" />
+		<result column="function_type" jdbcType="INTEGER" property="type" />
+		<result column="function_sort_num" jdbcType="INTEGER" property="sortnum" />
+		<result column="function_create_time" jdbcType="TIMESTAMP" property="createtime" />
+		<result column="function_update_time" jdbcType="TIMESTAMP" property="updatetime" />
+	</resultMap>
+	
+	<select id="findMenu" parameterType="int" resultMap="functionResultMap">
+		select DISTINCT 
+		       f.function_id,
+			   f.function_name,
+			   f.function_url,
+			   f.function_code,
+			   f.function_parent_id,
+			   f.function_status,
+			   f.function_type,
+			   f.function_sort_num,
+			   f.function_create_time,
+			   f.function_update_time
+		from 
+			   tb_functions f,tb_roles r, tb_role_function rf
+		where 
+			   f.function_id = rf.function_id and
+			   r.role_id = rf.role_id and 
+			   r.role_id in (
+			   		select 
+			   			r.role_id 
+					from 
+						tb_users u,tb_roles r,tb_user_role tr 
+					where 
+						u.user_id = tr.user_id and 
+						r.role_id = tr.role_id and 
+						u.user_id = #{userid} )
+	</select>
+	
+	<select id="findFunctionList" resultMap="functionResultMap">
+		select * from tb_functions
+	</select>
+	
+	<select id="findFuncByRoleId" resultMap="functionResultMap" parameterType="int">
+		select 
+			   DISTINCT 
+		       f.function_id,
+			   f.function_name,
+			   f.function_url,
+			   f.function_code,
+			   f.function_parent_id,
+			   f.function_status,
+			   f.function_type,
+			   f.function_sort_num,
+			   f.function_create_time,
+			   f.function_update_time 
+		from 
+			   tb_roles r,tb_role_function rf,tb_functions f 
+	    where 
+	    	   r.role_id = rf.role_id and 
+	    	   rf.function_id = f.function_id and 
+	    	   r.role_id = #{roleid}
+	</select>
+	
+	<insert id="addFunction" parameterType="com.lts.entity.Functions">
+		insert into tb_functions values(0,#{functionname},#{functionurl},#{functioncode},#{parentid},#{type},#{status},#{sortnum},#{createtime},#{updatetime})
+	</insert>
+	
+	<delete id="deleteFunction">
+		delete from tb_functions 
+		<where>
+			function_id in 
+			<foreach collection="id" item="functionid" open="(" close=")" separator=",">
+				#{functionid}
+			</foreach>
+		</where>
+	</delete>
+	
+	<select id="findById" resultMap="functionResultMap">
+		select * from tb_functions where function_id = #{functionid}
+	</select>
+	
+	<update id="updateFunction" parameterType="com.lts.entity.Functions">
+		update tb_functions set function_name = #{functionname},function_url=#{functionurl},function_code=#{functioncode},
+							function_parent_id=#{parentid},function_status=#{status},function_update_time=#{updatetime},function_type=#{type},function_sort_num=#{sortnum}
+							where function_id = #{functionid}
+	</update>
+	
+</mapper>

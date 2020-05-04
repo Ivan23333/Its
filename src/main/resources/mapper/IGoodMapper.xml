@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lts.dao.IGoodDao">
+	<resultMap id="goodResultMap" type="com.lts.entity.Goods">
+		<id column="goods_id" jdbcType="INTEGER" property="goodsid" />
+		<result column="goods_name" jdbcType="VARCHAR" property="goodsname" />
+		<result column="goods_RFID" jdbcType="VARCHAR" property="RFID" />
+		<result column="goods_unit" jdbcType="VARCHAR" property="unit" />
+		<result column="goods_price" jdbcType="INTEGER" property="price" />
+		<result column="goods_num" jdbcType="INTEGER" property="num" />
+		<result column="goods_origin" jdbcType="VARCHAR" property="origin" />
+		<result column="goods_status" jdbcType="INTEGER" property="status" />
+		<result column="goods_product_time" jdbcType="TIMESTAMP" property="producttime" />
+		<result column="goods_update_time" jdbcType="TIMESTAMP" property="updatetime" />
+	</resultMap>
+	<resultMap id="detailResultMap" type="com.lts.entity.Detail">
+		<id column="goods_id" jdbcType="INTEGER" property="goodsid" />
+		<result column="goods_owner_id" jdbcType="INTEGER" property="ownerid" />
+		<result column="goods_nowner_id" jdbcType="INTEGER" property="nownerid" />
+		<result column="goods_warehouse_id" jdbcType="INTEGER" property="warehouseid" />
+		<result column="goods_in_time" jdbcType="TIMESTAMP" property="intime" />
+		<result column="goods_out_time" jdbcType="TIMESTAMP" property="outtime" />
+	</resultMap>
+	<resultMap type="String" id="kind"></resultMap>
+
+	
+	<select id="findMyGoodsByPage" parameterType="int" resultMap="goodResultMap">
+		select 
+			 DISTINCT 
+		     g.goods_id,
+			 g.goods_name,
+			 g.goods_RFID,
+			 g.goods_unit,
+			 g.goods_price,
+			 g.goods_num,
+			 g.goods_origin,
+			 g.goods_status,
+			 g.goods_product_time,
+			 goods_update_time 
+		from 
+			tb_goods g,
+			tb_goods_status s
+		where 
+			s.goods_owner_id=#{userid} and
+			s.goods_id=g.goods_id
+		limit #{start} , #{pageSize}
+	</select>
+	
+	<select id="countMyGoods" resultType="int">
+		select 
+			count(*) 
+		from 
+			tb_goods g,
+			tb_goods_status s
+		where 
+			s.goods_owner_id=#{userid} and
+			s.goods_id=g.goods_id
+	</select>
+	
+	<select id="findTransportGoodsByPage" parameterType="int" resultMap="goodResultMap">
+		select 
+			 DISTINCT 
+		     g.goods_id,
+			 g.goods_name,
+			 g.goods_RFID,
+			 g.goods_unit,
+			 g.goods_price,
+			 g.goods_num,
+			 g.goods_origin,
+			 g.goods_status,
+			 g.goods_product_time,
+			 goods_update_time 
+		from 
+			tb_goods g,
+			tb_goods_status s
+		where 
+			s.goods_nowner_id=#{userid} and
+			s.goods_id=g.goods_id
+		limit #{start} , #{pageSize}
+	</select>
+	
+	<select id="countTransportGoods" resultType="int">
+		select 
+			count(*) 
+		from 
+			tb_goods g,
+			tb_goods_status s
+		where 
+			s.goods_nowner_id=#{userid} and
+			s.goods_id=g.goods_id
+	</select>
+	
+	<delete id="deleteGoods" parameterType="int">
+		delete from tb_goods where goods_id = #{goodsid}
+	</delete>
+	
+	<select id="findById" resultMap="goodResultMap">
+		select * from tb_goods where goods_id = #{goodsid}
+	</select>
+	
+	<update id="updateGoods" parameterType="com.lts.entity.Goods">
+		update tb_goods set goods_name = #{goodsname},goods_RFID=#{RFID},
+							goods_unit=#{unit},goods_price=#{price},
+							goods_num=#{num},goods_origin=#{origin},
+							goods_status=#{status},goods_product_time=#{producttime},
+							goods_update_time=#{updatetime}
+						where goods_id = #{goodsid}
+	</update>
+	
+	<select id="findDetail" resultMap="detailResultMap">
+		select * from tb_goods_status where goods_id = #{goodsid}
+	</select>
+	
+	<select id="findKind" resultMap="kind">
+		select DISTINCT goods_name from tb_goods
+	</select>
+	
+	<insert id="addGoods" parameterType="com.lts.entity.Goods" useGeneratedKeys="true" keyProperty="goodsid">
+		insert into tb_goods values(0,#{RFID},#{goodsname},#{unit},#{price},#{num},#{origin},#{producttime},#{updatetime},#{status})
+	</insert>
+	
+	<insert id="addDetail" parameterType="com.lts.entity.Detail" >
+		insert into tb_goods_status values(#{goodsid},#{warehouseid},#{intime},#{outtime},#{ownerid},#{nownerid})
+	</insert>
+	
+	<update id="updateDetail" parameterType="com.lts.entity.Detail">
+		update tb_goods_status  set goods_warehouse_id=#{warehouseid},
+									goods_in_time=#{intime},goods_out_time=#{outtime},
+									goods_owner_id = #{ownerid},goods_nowner_id=#{nownerid}
+								where goods_id = #{goodsid}
+	</update>
+</mapper>

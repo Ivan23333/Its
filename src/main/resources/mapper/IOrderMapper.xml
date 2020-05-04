@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lts.dao.IOrderDao">
+	<resultMap id="orderResultMap" type="com.lts.entity.Orders">
+		<id column="order_id" jdbcType="INTEGER" property="orderid" />
+		<result column="order_goods" jdbcType="VARCHAR" property="goods" />
+		<result column="order_city" jdbcType="VARCHAR" property="city" />
+		<result column="order_address" jdbcType="VARCHAR" property="address" />
+		<result column="order_unit" jdbcType="VARCHAR" property="unit" />
+		<result column="order_price" jdbcType="INTEGER" property="price" />
+		<result column="order_num" jdbcType="INTEGER" property="num" />
+		<result column="order_from_id" jdbcType="INTEGER" property="fromid" />
+		<result column="order_to_id" jdbcType="INTEGER" property="toid" />
+		<result column="order_status" jdbcType="INTEGER" property="status" />
+		<result column="order_create_time" jdbcType="TIMESTAMP" property="createtime" />
+		<result column="order_update_time" jdbcType="TIMESTAMP" property="updatetime" />
+	</resultMap>
+
+	
+	<select id="findPendingOrderByPage" parameterType="int" resultMap="orderResultMap">
+		select * from tb_orders where order_to_id = #{toid} limit #{start} , #{pageSize} 
+	</select>
+	
+	<select id="countPendingOrder" resultType="int">
+		select count(*) from tb_orders where order_to_id = #{toid}
+	</select>
+	
+	<select id="findMyOrderByPage" parameterType="int" resultMap="orderResultMap">
+		select * from tb_orders where order_from_id = #{fromid} limit #{start} , #{pageSize} 
+	</select>
+	
+	<select id="countMyOrder" resultType="int">
+		select count(*) from tb_orders where order_from_id = #{fromid}
+	</select>
+	
+	<insert id="addOrder" parameterType="com.lts.entity.Orders" >
+		insert into tb_orders values(0,#{goods},#{price},#{num},#{unit},#{city},#{address},#{fromid},#{toid},#{status},#{createtime},#{updatetime})
+	</insert>
+	
+	<select id="findById" resultMap="orderResultMap">
+		select * from tb_orders where order_id = #{orderid}
+	</select>
+	
+	<update id="updateOrder" parameterType="com.lts.entity.Orders">
+		update tb_orders set order_goods = #{goods},order_price=#{price},order_num=#{num},order_unit=#{unit},order_city=#{city},
+							order_address=#{address},order_from_id=#{fromid},order_to_id=#{toid},order_status=#{status},order_update_time=#{updatetime}
+						where order_id = #{orderid}
+	</update>
+	
+</mapper>

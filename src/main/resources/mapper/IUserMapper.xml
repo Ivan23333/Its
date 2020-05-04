@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lts.dao.IUserDao">
+	<resultMap id="userResultMap" type="com.lts.entity.Users">
+		<id column="user_id" jdbcType="INTEGER" property="userid" />
+		<result column="user_name" jdbcType="VARCHAR" property="username" />
+		<result column="user_password" jdbcType="VARCHAR" property="password" />
+		<result column="user_address" jdbcType="VARCHAR" property="address" />
+		<result column="user_phone" jdbcType="VARCHAR" property="phone" />
+		<result column="user_email" jdbcType="VARCHAR" property="email" />
+		<result column="user_status" jdbcType="INTEGER" property="status" />
+		<result column="user_note" jdbcType="VARCHAR" property="note" />
+		<result column="user_create_time" jdbcType="TIMESTAMP" property="createtime" />
+		<result column="user_update_time" jdbcType="TIMESTAMP" property="updatetime" />
+	</resultMap>
+	
+	<select id="findAll" resultMap="userResultMap">
+		select * from tb_users
+	</select>
+	
+	<select id="login" parameterType="string" resultMap="userResultMap">
+		select * from tb_users where user_name = #{username} and user_password = #{password}
+	</select>
+	
+	<select id="findByPage" parameterType="int" resultMap="userResultMap">
+		select * from tb_users limit #{start} , #{pageSize}
+	</select>
+	
+	<select id="countUser" resultType="int">
+		select count(*) from tb_users
+	</select>
+	
+	<insert id="addUser" parameterType="com.lts.entity.Users" >
+		insert into tb_users values(0,#{username},#{password},#{address},#{phone},#{email},#{status},#{note},#{createtime},#{updatetime})
+	</insert>
+	
+	<delete id="deleteUser" parameterType="int">
+		delete from tb_users where user_id = #{userid}
+	</delete>
+	
+	<select id="findById" resultMap="userResultMap">
+		select * from tb_users where user_id = #{userid}
+	</select>
+	
+	<update id="updateUser" parameterType="com.lts.entity.Users">
+		update tb_users set user_name = #{username},user_password=#{password},user_address=#{address},user_email=#{email},
+							user_phone=#{phone},user_status=#{status},user_update_time=#{updatetime},user_note=#{note}
+						where user_id = #{userid}
+	</update>
+	
+	<delete id="deleteByUserId" parameterType="int">
+		delete from tb_user_role where user_id = #{userid}
+	</delete>
+	<insert id="saveUserRole" parameterType="int">
+		insert into tb_user_role values(#{userid},#{roleid}) 
+	</insert>
+</mapper>
